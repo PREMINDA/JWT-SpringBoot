@@ -177,24 +177,5 @@ public class User implements Serializable {
         isNotLocked = notLocked;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", userId='" + userId + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", profileImageUrl='" + profileImageUrl + '\'' +
-                ", joinDate=" + joinDate +
-                ", lastLoginDate=" + lastLoginDate +
-                ", lastLogindateDisplay=" + lastLogindateDisplay +
-                ", role='" + role + '\'' +
-                ", authorities=" + Arrays.toString(authorities) +
-                ", isActive=" + isActive +
-                ", isNotLocked=" + isNotLocked +
-                '}';
-    }
+
 }

@@ -7,6 +7,7 @@ import com.preband.JWT.exception.domain.EmailExistException;
 import com.preband.JWT.exception.domain.UserNameExistException;
 import com.preband.JWT.exception.domain.UserNotFoundException;
 import com.preband.JWT.repository.UserRepository;
+import com.preband.JWT.service.LoginAttemptService;
 import com.preband.JWT.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +26,7 @@ import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Transactional
@@ -34,15 +36,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     private UserRepository userRepository;
-
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-
-
+    private LoginAttemptService loginAttemptService;
+    
     @Autowired
-    public UserServiceImpl(UserRepository userRepository,BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository userRepository,BCryptPasswordEncoder bCryptPasswordEncoder,LoginAttemptService loginAttemptService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder=bCryptPasswordEncoder;
+        this.loginAttemptService = loginAttemptService;
     }
 
     @Override
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             LOGGER.error("User Not Found by Username" + username);
             throw new UsernameNotFoundException("User Not Found by Username" + username);
         }else{
+             validateLoginAttempt(user);
              user.setLastLogindateDisplay(user.getLastLoginDate());
              user.setLastLoginDate(new Date());
              userRepository.save(user);
@@ -62,6 +64,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return userPrinciple;
         }
 
+    }
+
+    private void validateLoginAttempt(User user) {
+        if(user.isNotLocked()){
+            if(loginAttemptService.hasExceededMaxAttempt(user.getUsername())){
+                user.setNotLocked(false);
+            }else{
+                 user.setNotLocked(true);
+            }
+        }else{
+            loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());
+        }
     }
 
     @Override
