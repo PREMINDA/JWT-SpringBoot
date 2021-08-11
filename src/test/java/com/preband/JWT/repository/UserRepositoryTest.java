@@ -25,4 +25,9 @@ class UserRepositoryTest {
         User newuser =userRepository.findUserByEmail("Jhon@example.com");
         System.out.println(newuser);
     }
+
+    @Test
+    public void wr(){
+
+    }
 }
