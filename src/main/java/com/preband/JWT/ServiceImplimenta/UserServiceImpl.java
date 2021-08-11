@@ -7,6 +7,7 @@ import com.preband.JWT.exception.domain.EmailExistException;
 import com.preband.JWT.exception.domain.UserNameExistException;
 import com.preband.JWT.exception.domain.UserNotFoundException;
 import com.preband.JWT.repository.UserRepository;
+import com.preband.JWT.service.EmailService;
 import com.preband.JWT.service.LoginAttemptService;
 import com.preband.JWT.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -38,12 +40,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private LoginAttemptService loginAttemptService;
+    private EmailService emailService;
     
     @Autowired
-    public UserServiceImpl(UserRepository userRepository,BCryptPasswordEncoder bCryptPasswordEncoder,LoginAttemptService loginAttemptService) {
+    public UserServiceImpl(UserRepository userRepository,BCryptPasswordEncoder bCryptPasswordEncoder,LoginAttemptService loginAttemptService,EmailService emailService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder=bCryptPasswordEncoder;
         this.loginAttemptService = loginAttemptService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -96,7 +100,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setRole(Role.ROLE_USER.name());
         user.setAuthorities(Role.ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTempfileImageUrl());
-        userRepository.save(user);
         return user;
     }
 
