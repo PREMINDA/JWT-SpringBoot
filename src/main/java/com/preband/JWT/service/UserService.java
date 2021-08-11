@@ -4,7 +4,9 @@ import com.preband.JWT.domain.User;
 import com.preband.JWT.exception.domain.EmailExistException;
 import com.preband.JWT.exception.domain.UserNameExistException;
 import com.preband.JWT.exception.domain.UserNotFoundException;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Multipart;
 import java.util.List;
 
 public interface UserService {
@@ -15,5 +17,13 @@ public interface UserService {
     User findUserByUsername(String username);
 
     User findUserByEmail(String email);
+
+    User addNewUser(String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profile);
+
+    User UpdateUser(String currentName,String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profile);
+
+    User deleteUser(long id);
+
+    User updateProfileImage(String username,MultipartFile profileImage);
 
 }
