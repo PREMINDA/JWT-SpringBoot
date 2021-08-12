@@ -1,6 +1,7 @@
 package com.preband.JWT.controller;
 
 import com.preband.JWT.constant.SecurityConstant;
+import com.preband.JWT.domain.HttpResponse;
 import com.preband.JWT.domain.User;
 import com.preband.JWT.domain.UserPrinciple;
 import com.preband.JWT.exception.domain.EmailExistException;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping(path = {"/","/user"})
@@ -94,6 +97,16 @@ public class UserController extends ExceptionHandling {
         return new ResponseEntity<>(users,HttpStatus.OK);
     }
 
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyAuthority('user:delete')")
+    public ResponseEntity<HttpResponse> deleteUser(@PathVariable("id") long id){
+        userService.deleteUser(id);
+        return response(HttpStatus.NO_CONTENT,"User Deleted successfully");
+    }
+
+    private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+        return new ResponseEntity<>(new HttpResponse(httpStatus.value(),httpStatus,httpStatus.getReasonPhrase().toUpperCase(),message.toUpperCase(Locale.ROOT)),httpStatus);
+    }
 
 
     private HttpHeaders getJwtHeader(UserPrinciple user) {
