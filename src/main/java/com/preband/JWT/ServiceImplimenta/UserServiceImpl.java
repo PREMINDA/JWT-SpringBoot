@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
+import static com.preband.JWT.constant.FileConstant.*;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Service
@@ -80,8 +81,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
     }
-
-
 
     @Override
     public User register(String firstName, String lastName, String username, String email) throws UserNotFoundException, EmailExistException, UserNameExistException {
@@ -129,7 +128,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User UpdateUser(String currentName, String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profile) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException {
+    public User updateUser(String currentName, String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profilePicture) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException {
         User user = validateNewUsernameAndEmail(currentName,username,email);
         user.setFirstName(firstName);
         user.setLastName(lastName);
@@ -140,8 +139,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setRole(getRoleEnumName(role).name());
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
         userRepository.save(user);
-        saveProfileImage(user,profile);
+        saveProfileImage(user, profilePicture);
         return user;
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public User findUserByUsername(String username) {
+        return userRepository.findUserByUsername(username);
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
+
+    @Override
+    public void deleteUser(long id) {
+        userRepository.deleteById(id);
     }
 
     private void validateLoginAttempt(User user) {
@@ -157,7 +176,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private String getTempfileImageUrl(String username) {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path(FileConstant.DEFAULT_USER_IMAGE_PATH+username).toUriString();
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH+username).toUriString();
     }
 
     private String encoddePassword(String password) {
@@ -202,52 +221,29 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
-    public List<User> getUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public User findUserByUsername(String username) {
-        return userRepository.findUserByUsername(username);
-    }
-
-    @Override
-    public User findUserByEmail(String email) {
-        return userRepository.findUserByEmail(email);
-    }
-
-
-
-    private void saveProfileImage(User user, MultipartFile profile) throws IOException {
-        if(profile==null){
-            Path userFolder = Paths.get(FileConstant.USER_FOLDER+user.getUsername()).toAbsolutePath().normalize();
+    private void saveProfileImage(User user, MultipartFile profilePicture) throws IOException {
+        if(profilePicture==null){
+            Path userFolder = Paths.get(USER_FOLDER+user.getUsername()).toAbsolutePath().normalize();
             if(!Files.exists(userFolder)){
                 Files.createDirectories(userFolder);
-                LOGGER.info(FileConstant.DIRECTORY_CREATED);
+                LOGGER.info(DIRECTORY_CREATED);
             }
-            Files.deleteIfExists(Paths.get(userFolder+user.getUsername()+FileConstant.DOT+FileConstant.JPG_EXTENSION));
-            Files.copy(profile.getInputStream(),userFolder.resolve(user.getUsername()+FileConstant.DOT+FileConstant.JPG_EXTENSION),REPLACE_EXISTING);
+            Files.deleteIfExists(Paths.get(userFolder+user.getUsername()+DOT+JPG_EXTENSION));
+            Files.copy(profilePicture.getInputStream(),userFolder.resolve(user.getUsername()+DOT+JPG_EXTENSION),REPLACE_EXISTING);
             user.setProfileImageUrl(setProfileImageUrl(user.getUsername()));
             userRepository.save(user);
-            LOGGER.info(FileConstant.FILE_SAVED_IN_FILE_SYSTEM);
+            LOGGER.info(FILE_SAVED_IN_FILE_SYSTEM);
         }
     }
 
     private String setProfileImageUrl(String username) {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path(FileConstant.USER_IMAGE_PATH+username+FileConstant.FORWARD_SLASH+username+FileConstant.DOT+FileConstant.JPG_EXTENSION).toUriString();
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path(USER_IMAGE_PATH+username+ FORWARD_SLASH+username+DOT+JPG_EXTENSION).toUriString();
     }
 
     private Role getRoleEnumName(String role) {
         return Role.valueOf(role.toUpperCase());
     }
 
-
-
-    @Override
-    public void deleteUser(long id) {
-        userRepository.deleteById(id);
-    }
 
     @Override
     public User updateProfileImage(String username, MultipartFile profileImage) {
