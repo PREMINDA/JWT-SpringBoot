@@ -77,7 +77,10 @@ public class UserController extends ExceptionHandling {
     }
 
     @PostMapping("/updateimage")
-    public ResponseEntity<User>
+    public ResponseEntity<User> updateProfileImage(@RequestParam("username") String username,@RequestParam(value = "profileImage") MultipartFile profileImage) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException {
+        User user  = userService.updateProfileImage(username,profileImage);
+        return new ResponseEntity<>(user,HttpStatus.OK);
+    }
 
     @PostMapping("/update")
     public ResponseEntity<User> update(    @RequestParam("currentName") String currentName,
@@ -107,6 +110,8 @@ public class UserController extends ExceptionHandling {
         return response(HttpStatus.NO_CONTENT,"User Deleted successfully");
     }
 
+//    @GetMapping()
+    
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(),httpStatus,httpStatus.getReasonPhrase().toUpperCase(),message.toUpperCase(Locale.ROOT)),httpStatus);
     }
