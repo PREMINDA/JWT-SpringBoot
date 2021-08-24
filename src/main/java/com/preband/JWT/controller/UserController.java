@@ -76,6 +76,9 @@ public class UserController extends ExceptionHandling {
         return new ResponseEntity<>(newUser,HttpStatus.OK);
     }
 
+    @PostMapping("/updateimage")
+    public ResponseEntity<User>
+
     @PostMapping("/update")
     public ResponseEntity<User> update(    @RequestParam("currentName") String currentName,
                                            @RequestParam("firstName") String firstName,

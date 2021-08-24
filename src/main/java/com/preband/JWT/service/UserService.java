@@ -25,6 +25,6 @@ public interface UserService {
 
     void deleteUser(long id);
 
-    User updateProfileImage(String username,MultipartFile profileImage);
+    User updateProfileImage(String username,MultipartFile profileImage) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException;
 
 }
