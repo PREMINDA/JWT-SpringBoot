@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
-    User register(String firstName, String lastName, String username, String email) throws UserNotFoundException, EmailExistException, UserNameExistException;
+    User register(String firstName, String lastName,String Password, String username, String email) throws UserNotFoundException, EmailExistException, UserNameExistException;
 
     List<User> getUsers();
 
@@ -19,12 +19,11 @@ public interface UserService {
 
     User findUserByEmail(String email);
 
-    User addNewUser(String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profile) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException;
+    User addNewUser(String firstName, String lastName, String username, String email,String password, String role, boolean isNonLocked, boolean isActive) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException;
 
-    User updateUser(String currentName,String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profilePicture) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException;
+    User updateUser(String currentName,String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException;
 
     void deleteUser(long id);
 
-    User updateProfileImage(String username,MultipartFile profileImage) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException;
 
 }

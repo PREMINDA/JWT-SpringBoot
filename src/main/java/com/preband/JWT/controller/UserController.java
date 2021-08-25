@@ -8,9 +8,10 @@ import com.preband.JWT.exception.domain.EmailExistException;
 import com.preband.JWT.exception.domain.ExceptionHandling;
 import com.preband.JWT.exception.domain.UserNameExistException;
 import com.preband.JWT.exception.domain.UserNotFoundException;
-import com.preband.JWT.repository.UserRepository;
+
 import com.preband.JWT.service.UserService;
 import com.preband.JWT.utility.JWTTokenProvider;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.preband.JWT.constant.FileConstant;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+
+import static com.preband.JWT.constant.FileConstant.*;
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
 @RequestMapping(path = {"/","/user"})
@@ -58,7 +69,7 @@ public class UserController extends ExceptionHandling {
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody User user) throws EmailExistException, UserNotFoundException, UserNameExistException {
 
-       User newUser =  userService.register(user.getFirstName(),user.getLastName(),user.getUsername(),user.getEmail());
+       User newUser =  userService.register(user.getFirstName(),user.getLastName(),user.getUsername(),user.getPassword(),user.getEmail());
 
        return new ResponseEntity<>(newUser, HttpStatus.OK);
     }
@@ -67,20 +78,16 @@ public class UserController extends ExceptionHandling {
                                            @RequestParam("lastName") String lastName,
                                            @RequestParam("userName") String userName,
                                            @RequestParam("email") String email,
+                                           @RequestParam("password") String password,
                                            @RequestParam("role") String role,
                                            @RequestParam("isActive") String isActive,
-                                           @RequestParam("isNonLocked") String isNonLocked,
-                                           @RequestParam(value = "profileImage",required = false) MultipartFile profilePicture
+                                           @RequestParam("isNonLocked") String isNonLocked
+
                                            ) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException {
-        User newUser = userService.addNewUser(firstName,lastName,userName,email,role,Boolean.parseBoolean(isNonLocked),Boolean.parseBoolean(isActive),profilePicture);
+        User newUser = userService.addNewUser(firstName,lastName,userName,email,password,role,Boolean.parseBoolean(isNonLocked),Boolean.parseBoolean(isActive));
         return new ResponseEntity<>(newUser,HttpStatus.OK);
     }
 
-    @PostMapping("/updateimage")
-    public ResponseEntity<User> updateProfileImage(@RequestParam("username") String username,@RequestParam(value = "profileImage") MultipartFile profileImage) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException {
-        User user  = userService.updateProfileImage(username,profileImage);
-        return new ResponseEntity<>(user,HttpStatus.OK);
-    }
 
     @PostMapping("/update")
     public ResponseEntity<User> update(    @RequestParam("currentName") String currentName,
@@ -90,10 +97,10 @@ public class UserController extends ExceptionHandling {
                                            @RequestParam("email") String email,
                                            @RequestParam("role") String role,
                                            @RequestParam("isActive") String isActive,
-                                           @RequestParam("isNonLocked") String isNonLocked,
-                                           @RequestParam(value = "profileImage",required = false) MultipartFile profilePicture
+                                           @RequestParam("isNonLocked") String isNonLocked
+
     ) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException {
-        User updateUser = userService.updateUser(currentName,firstName,lastName,userName,email,role,Boolean.parseBoolean(isNonLocked),Boolean.parseBoolean(isActive),profilePicture);
+        User updateUser = userService.updateUser(currentName,firstName,lastName,userName,email,role,Boolean.parseBoolean(isNonLocked),Boolean.parseBoolean(isActive));
         return new ResponseEntity<>(updateUser,HttpStatus.OK);
     }
 
@@ -110,8 +117,26 @@ public class UserController extends ExceptionHandling {
         return response(HttpStatus.NO_CONTENT,"User Deleted successfully");
     }
 
-//    @GetMapping()
-    
+    @GetMapping(path = "/image/{username}/{filename}",produces = IMAGE_JPEG_VALUE)
+    public byte[] getProfileImageBytes(@PathVariable("username") String username,@PathVariable("filename") String filename) throws IOException {
+        return Files.readAllBytes(Paths.get(USER_FOLDER+username+FORWARD_SLASH+filename));
+    }
+
+    @GetMapping(path = "/image/profile/{username}",produces = IMAGE_JPEG_VALUE)
+    public byte[] getTempProfileImageBytes(@PathVariable("username") String username) throws IOException {
+        URL url = new URL(TEMP_PROFILE_IMAGE_BASE_URL+username);
+        System.out.println(url);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try(InputStream inputStream = url.openStream()){
+            int bytesRead;
+            byte[] chunk = new byte[1024];
+            while ((bytesRead = inputStream.read(chunk))>0){
+                byteArrayOutputStream.write(chunk,0,bytesRead);
+            }
+        }
+        return byteArrayOutputStream.toByteArray();
+    }
+
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(),httpStatus,httpStatus.getReasonPhrase().toUpperCase(),message.toUpperCase(Locale.ROOT)),httpStatus);
     }

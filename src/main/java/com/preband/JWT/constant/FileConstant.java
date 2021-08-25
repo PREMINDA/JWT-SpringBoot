@@ -9,6 +9,6 @@ public class FileConstant {
     public static final String FILE_SAVED_IN_FILE_SYSTEM = "Saved file in file system by name : ";
     public static final String DOT = ".";
     public static final String FORWARD_SLASH = "/";
-    public static final String TEMP_PROFILE_IMAGE_BASE_URL = "/";
-    public static final String ROBOHASH = "https://robohash.org/";
+    public static final String TEMP_PROFILE_IMAGE_BASE_URL = "https://robohash.org/";
+
 }
