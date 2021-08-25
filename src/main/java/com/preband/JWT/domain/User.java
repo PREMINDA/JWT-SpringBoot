@@ -17,7 +17,6 @@ public class User implements Serializable {
     private String username;
     private String password;
     private String email;
-    private String profileImageUrl;
     private Date joinDate;
     private Date lastLoginDate;
     private Date lastLogindateDisplay;
@@ -36,7 +35,6 @@ public class User implements Serializable {
                 String username,
                 String password,
                 String email,
-                String profileImageUrl,
                 Date joinDate,
                 Date lastLoginDate,
                 Date lastLogindateDisplay,
@@ -52,7 +50,6 @@ public class User implements Serializable {
         this.password = password;
         this.email = email;
         this.joinDate = joinDate;
-        this.profileImageUrl = profileImageUrl;
         this.lastLoginDate = lastLoginDate;
         this.lastLogindateDisplay = lastLogindateDisplay;
         this.role = role;
@@ -115,14 +112,6 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getProfileImageUrl() {
-        return profileImageUrl;
-    }
-
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
     }
 
     public Date getJoinDate() { return joinDate; }

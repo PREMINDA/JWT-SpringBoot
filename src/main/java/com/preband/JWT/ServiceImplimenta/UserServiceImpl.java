@@ -8,7 +8,6 @@ import com.preband.JWT.exception.domain.EmailExistException;
 import com.preband.JWT.exception.domain.UserNameExistException;
 import com.preband.JWT.exception.domain.UserNotFoundException;
 import com.preband.JWT.repository.UserRepository;
-import com.preband.JWT.service.EmailService;
 import com.preband.JWT.service.LoginAttemptService;
 import com.preband.JWT.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -23,23 +22,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 import javax.transaction.Transactional;
 
 import java.io.IOException;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
-
-
-import static com.preband.JWT.constant.FileConstant.*;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Service
 @Transactional
@@ -51,14 +41,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private LoginAttemptService loginAttemptService;
-    private EmailService emailService;
     
     @Autowired
-    public UserServiceImpl(UserRepository userRepository,BCryptPasswordEncoder bCryptPasswordEncoder,LoginAttemptService loginAttemptService,EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository,BCryptPasswordEncoder bCryptPasswordEncoder,LoginAttemptService loginAttemptService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder=bCryptPasswordEncoder;
         this.loginAttemptService = loginAttemptService;
-        this.emailService = emailService;
+
     }
 
     @Override
