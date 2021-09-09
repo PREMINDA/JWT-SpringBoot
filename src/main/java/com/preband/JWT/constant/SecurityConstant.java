@@ -4,7 +4,7 @@ public class SecurityConstant {
 
     public static final long EXPIRATION_TIME = 432_000_000;
     public static final String TOKEN_PREFIX = "Bearer ";
-    public static final String JWT_TOKE_HEADER = "Jwt-Token";
+    public static final String JWT_TOKE_HEADER = "JwtToken";
     public static final String TOKEN_CANNOT_BE_VERIFIED = "Token Cannot be Verified";
     public static final String GET_ARRAYS_LLC = "GAMING ROOM, LLC";
     public static final String GET_ARRAYS_ADMINISTRATION = "User Management Portal";

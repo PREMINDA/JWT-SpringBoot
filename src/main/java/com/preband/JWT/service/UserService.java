@@ -19,7 +19,7 @@ public interface UserService {
 
     User findUserByEmail(String email);
 
-    User addNewUser(String firstName, String lastName, String username, String email,String password, String role, boolean isNonLocked, boolean isActive) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException;
+    User addNewUser(String firstName, String lastName, String username, String email,String password, String role) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException;
 
     User updateUser(String currentName,String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException;
 

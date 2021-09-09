@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User addNewUser(String firstName, String lastName, String username, String email,String password, String role, boolean isNonLocked, boolean isActive) throws UserNotFoundException, EmailExistException, UserNameExistException {
+    public User addNewUser(String firstName, String lastName, String username, String email,String password, String role) throws UserNotFoundException, EmailExistException, UserNameExistException {
         validateNewUsernameAndEmail(StringUtils.EMPTY,username,email);
         User user = new User();
         user.setUserId(generateUserId());
@@ -103,8 +103,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setEmail(email);
         user.setJoinDate(new Date());
         user.setPassword(encodePassword);
-        user.setActive(isActive);
-        user.setNotLocked(isNonLocked);
+        user.setActive(true);
+        user.setNotLocked(true);
         user.setRole(getRoleEnumName(role).name());
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
         userRepository.save(user);
@@ -158,11 +158,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-
     private String encoddePassword(String password) {
         return bCryptPasswordEncoder.encode(password);
     }
-
 
     private String generateUserId() {
         return RandomStringUtils.randomNumeric(10);
@@ -201,8 +199,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private Role getRoleEnumName(String role) {
         return Role.valueOf(role.toUpperCase());
     }
-
-
-
 
 }

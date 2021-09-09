@@ -38,7 +38,6 @@ public class UserController extends ExceptionHandling {
     private final AuthenticationManager authenticationManager;
     private final JWTTokenProvider jwtTokenProvider;
 
-
     @Autowired
     public UserController(UserService userService, AuthenticationManager authenticationManager, JWTTokenProvider jwtTokenProvider) {
         this.userService = userService;
@@ -46,19 +45,14 @@ public class UserController extends ExceptionHandling {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-
-
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody User user) throws EmailExistException, UserNotFoundException, UserNameExistException {
-
         authenticate(user.getUsername(),user.getPassword());
         User loginUser = userService.findUserByUsername(user.getUsername());
         UserPrinciple userPrinciple = new UserPrinciple(loginUser);
         HttpHeaders jwtHeader = getJwtHeader(userPrinciple);
         return new ResponseEntity<>(loginUser,jwtHeader, HttpStatus.OK);
     }
-
-
 
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody User user) throws EmailExistException, UserNotFoundException, UserNameExistException {
@@ -67,21 +61,12 @@ public class UserController extends ExceptionHandling {
 
        return new ResponseEntity<>(newUser, HttpStatus.OK);
     }
-    @PostMapping("/add")
-    public ResponseEntity<User> addNewUser(@RequestParam("firstName") String firstName,
-                                           @RequestParam("lastName") String lastName,
-                                           @RequestParam("userName") String userName,
-                                           @RequestParam("email") String email,
-                                           @RequestParam("password") String password,
-                                           @RequestParam("role") String role,
-                                           @RequestParam("isActive") String isActive,
-                                           @RequestParam("isNonLocked") String isNonLocked
 
-                                           ) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException {
-        User newUser = userService.addNewUser(firstName,lastName,userName,email,password,role,Boolean.parseBoolean(isNonLocked),Boolean.parseBoolean(isActive));
+    @PostMapping("/add")
+    public ResponseEntity<User> addNewUser(@RequestBody User user) throws UserNotFoundException, EmailExistException, UserNameExistException, IOException {
+        User newUser = userService.addNewUser(user.getFirstName(), user.getLastName(), user.getUsername(),user.getEmail(),user.getPassword(), user.getRole());
         return new ResponseEntity<>(newUser,HttpStatus.OK);
     }
-
 
     @PostMapping("/update")
     public ResponseEntity<User> update(    @RequestParam("currentName") String currentName,

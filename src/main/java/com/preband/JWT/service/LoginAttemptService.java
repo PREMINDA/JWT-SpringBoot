@@ -19,7 +19,6 @@ public class LoginAttemptService {
 
 
     public LoginAttemptService() {
-        super();
         loginAttemptCash = CacheBuilder.newBuilder().expireAfterAccess(15,MINUTES).maximumSize(100).build(
                 new CacheLoader<String, Integer>() {
                     @Override
